@@ -12,6 +12,22 @@
 #include <errno.h>
 #include <linux/joystick.h>
 #endif
+#ifdef Q_OS_WIN
+#include <windows.h>
+#define DIRECTINPUT_VERSION 0x0800
+#include <dinput.h>
+#include <dinputd.h>
+#include <QList>
+struct DI_ENUM_CONTEXT
+{
+    DIJOYCONFIG* pPreferredJoyCfg;
+    bool bPreferredJoyCfgValid;
+};
+#define SAFE_DELETE(p)  { if(p) { delete (p);     (p)=nullptr; } }
+#define SAFE_RELEASE(p) { if(p) { (p)->Release(); (p)=nullptr; } }
+BOOL CALLBACK    EnumJoysticksCallback( const DIDEVICEINSTANCE* pdidInstance, VOID* pContext );
+BOOL CALLBACK    EnumObjectsCallback( const DIDEVICEOBJECTINSTANCE* pdidoi, VOID* pContext );
+#endif
 
 class QJoystickEvent
 {
@@ -67,11 +83,18 @@ private:
     int fd;
     QString Name;
     uint ID;
-    uint Axis;
-    uint Buttons;
     bool Valid;
     QMap<uint, float> AxisValues;
     QMap<uint, bool> ButtonValues;
+public:
+    //These should be private but EnumObjectsCallback needs access to them.
+#ifdef Q_OS_WIN
+    LPDIRECTINPUTDEVICE8    g_pJoystick = nullptr;
+    uint enumCounter;
+    QList<GUID> DIaxisGIIDs;
+#endif
+    uint Axis;
+    uint Buttons;
 signals:
     void JoystickEvent(QJoystickEvent *event);
     void JoystickButtonEvent(QJoystickButtonEvent *event);

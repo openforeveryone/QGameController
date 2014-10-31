@@ -11,6 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = QJoystick
 TEMPLATE = app
 
+win32:LIBS      += -ldinput8 -ldxguid
 
 SOURCES += main.cpp\
         widget.cpp \
@@ -20,3 +21,5 @@ HEADERS  += widget.h \
     qjoystick.h
 
 FORMS    +=
+
+CONFIG += c++11

@@ -48,7 +48,7 @@ Widget::Widget(QWidget *parent) :
             barsMap.insert(i, bars);
 
             QTimer *timer = new QTimer(this);
-            timer->setInterval(0);
+            timer->setInterval(15);
             connect(timer, SIGNAL(timeout()), joystick, SLOT(readJoystick()));
             timer->start();
         }
