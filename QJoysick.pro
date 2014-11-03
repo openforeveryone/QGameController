@@ -13,6 +13,9 @@ TEMPLATE = app
 
 win32:LIBS      += -ldinput8 -ldxguid
 
+LIBS += -framework IOKit
+LIBS += -framework CoreFoundation
+
 SOURCES += main.cpp\
         widget.cpp \
     qjoystick.cpp
@@ -22,4 +25,4 @@ HEADERS  += widget.h \
 
 FORMS    +=
 
-CONFIG += c++11
+win32:CONFIG += c++11

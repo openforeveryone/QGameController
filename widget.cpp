@@ -53,7 +53,10 @@ Widget::Widget(QWidget *parent) :
             timer->start();
         }
         else
+        {
             delete joystick;
+            break;
+        }
      }
 }
 

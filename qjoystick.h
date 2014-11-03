@@ -28,6 +28,12 @@ struct DI_ENUM_CONTEXT
 BOOL CALLBACK    EnumJoysticksCallback( const DIDEVICEINSTANCE* pdidInstance, VOID* pContext );
 BOOL CALLBACK    EnumObjectsCallback( const DIDEVICEOBJECTINSTANCE* pdidoi, VOID* pContext );
 #endif
+#ifdef Q_OS_MAC
+#include <IOKit/hid/IOHIDManager.h>
+#include <IOKit/HID/IOHIDKeys.h>
+CFMutableDictionaryRef hu_CreateDeviceMatchingDictionary(UInt32 inUsagePage, UInt32 inUsage);
+QString CFStringRefToQString(CFStringRef str);
+#endif
 
 class QJoystickEvent
 {
@@ -86,6 +92,13 @@ private:
     bool Valid;
     QMap<uint, float> AxisValues;
     QMap<uint, bool> ButtonValues;
+#ifdef Q_OS_MAC
+    IOHIDDeviceRef device;
+    QList<IOHIDElementRef> axisElements;
+    QList<uint> axisMaxVals;
+    QList<uint> axisMinVals;
+    QList<IOHIDElementRef> buttonElements;
+#endif
 public:
     //These should be private but EnumObjectsCallback needs access to them.
 #ifdef Q_OS_WIN
