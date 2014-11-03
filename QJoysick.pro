@@ -13,8 +13,8 @@ TEMPLATE = app
 
 win32:LIBS      += -ldinput8 -ldxguid
 
-LIBS += -framework IOKit
-LIBS += -framework CoreFoundation
+mac:LIBS += -framework IOKit
+mac:LIBS += -framework CoreFoundation
 
 SOURCES += main.cpp\
         widget.cpp \
