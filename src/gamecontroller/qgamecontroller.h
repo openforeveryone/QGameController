@@ -2,6 +2,7 @@
 #define QGameController_H
 
 #include <QObject>
+#include "qgamecontroller-global.h"
 
 QT_BEGIN_NAMESPACE
 class QGameControllerPrivate;
@@ -14,7 +15,7 @@ protected:
     uint ControllerId;
 };
 
-class QGameControllerButtonEvent : public QGameControllerEvent
+class QGAMECONTROLLER_EXPORT QGameControllerButtonEvent : public QGameControllerEvent
 {
 public:
     QGameControllerButtonEvent(uint controllerId, uint button, bool pressed);
@@ -25,7 +26,7 @@ private:
     bool Pressed;
 };
 
-class QGameControllerAxisEvent : public QGameControllerEvent
+class QGAMECONTROLLER_EXPORT QGameControllerAxisEvent : public QGameControllerEvent
 {
 public:
     QGameControllerAxisEvent(uint controllerId, uint axis, float value);
@@ -36,7 +37,7 @@ private:
     float Value;
 };
 
-class QGameController : public QObject
+class QGAMECONTROLLER_EXPORT QGameController : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(QGameController)

@@ -1,0 +1,13 @@
+QT.gamecontroller.VERSION = 0.1.0
+QT.gamecontroller.MAJOR_VERSION = 0
+QT.gamecontroller.MINOR_VERSION = 1
+QT.gamecontroller.PATCH_VERSION = 0
+QT.gamecontroller.name = QtGameController
+QT.gamecontroller.bins = $$QT_MODULE_BIN_BASE
+QT.gamecontroller.includes = $$QT_MODULE_INCLUDE_BASE $$QT_MODULE_INCLUDE_BASE/QtGameController
+QT.gamecontroller.private_includes = $$QT_MODULE_INCLUDE_BASE/QtGameController/$$QT.gamecontroller.VERSION
+QT.gamecontroller.sources = $$QT_MODULE_BASE/src/gamecontroller
+QT.gamecontroller.libs = $$QT_MODULE_LIB_BASE
+QT.gamecontroller.depends = core
+QT.gamecontroller.DEFINES = QT_GAMECONTROLLER_LIB
+QT_CONFIG += gamecontroller
