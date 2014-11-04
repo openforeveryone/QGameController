@@ -8,8 +8,6 @@ QT       += core gui gamecontroller
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-DEFINES += QGAMECONTROLLER_LIBRARY
-
 TARGET = GameControllerTester
 TEMPLATE = app
 

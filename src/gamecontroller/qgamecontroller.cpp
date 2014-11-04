@@ -4,7 +4,7 @@
 #include <QDebug>
 
 #ifdef Q_OS_WIN
-QGameController *joysticktoenume; //TODO: Dispense with this global pointer.
+QGameControllerPrivate *joysticktoenume; //TODO: Dispense with this global pointer.
 LPDIRECTINPUT8          g_pDI = nullptr;
 #endif
 #ifdef Q_OS_MAC
@@ -72,11 +72,31 @@ QGameControllerButtonEvent::QGameControllerButtonEvent(uint controllerId, uint b
     Pressed=pressed;
 }
 
+uint QGameControllerButtonEvent::button()
+{
+    return Button;
+}
+
+bool QGameControllerButtonEvent::pressed()
+{
+    return Pressed;
+}
+
 QGameControllerAxisEvent::QGameControllerAxisEvent(uint controllerId, uint axis, float value)
 {
     ControllerId=controllerId;
     Axis=axis;
     Value=value;
+}
+
+uint QGameControllerAxisEvent::axis()
+{
+    return Axis;
+}
+
+float QGameControllerAxisEvent::value()
+{
+    return Value;
 }
 
 QGameControllerPrivate::QGameControllerPrivate(uint id, QGameController *q) :
@@ -335,7 +355,7 @@ BOOL CALLBACK EnumJoysticksCallback( const DIDEVICEINSTANCE* pdidInstance,
                                      VOID* pContext )
 {
 //    qDebug() << "EnumJoysticksCallback()" << joysticktoenume->enumCounter;
-    if (joysticktoenume->enumCounter!=joysticktoenume->id())
+    if (joysticktoenume->enumCounter!=joysticktoenume->ID)
     {
 //        qDebug() << "Skiping" << joysticktoenume->enumCounter;
         joysticktoenume->enumCounter++;
@@ -472,7 +492,8 @@ void QGameControllerPrivate::readGameController()
 //        qDebug() << "No event";
 #endif
 
-#ifdef Q_OS_WIN
+#ifdef Q_OS_WIN    
+    Q_Q(QGameController);
     HRESULT hr;
     DIJOYSTATE2 js;           // DInput joystick state
 
@@ -542,13 +563,13 @@ void QGameControllerPrivate::readGameController()
                 AxisValues.insert(axisid,valueX);
                 QGameControllerAxisEvent *event=new QGameControllerAxisEvent(ID, axisid, valueX);
 //                qDebug("Axis %i moved to %f.", axisid, valueX);
-                emit(JoystickAxisEvent(event));
+                emit(q->gameControllerAxisEvent(event));
             }if (valueY!=AxisValues.value(axisid+1))
             {
                 AxisValues.insert(axisid+1,valueY);
                 QGameControllerAxisEvent *event=new QGameControllerAxisEvent(ID, axisid+1, valueY);
                 qDebug("Axis %i moved to %f.", axisid+1, valueY);
-                emit(JoystickAxisEvent(event));
+                emit(q->gameControllerAxisEvent(event));
             }
             axisid++; //We have dealt with 2 axis in one go.
             pov++;
@@ -560,7 +581,7 @@ void QGameControllerPrivate::readGameController()
                 AxisValues.insert(axisid,value);
                 QGameControllerAxisEvent *event=new QGameControllerAxisEvent(ID, axisid, value);
                 //            qDebug("Axis %i moved to %f.", axisid, value);
-                emit(JoystickAxisEvent(event));
+                emit(q->gameControllerAxisEvent(event));
             }
         }
     }
@@ -574,7 +595,7 @@ void QGameControllerPrivate::readGameController()
                ButtonValues.insert(i,true);
 //               qDebug("Button %i pressed.", i);
                QGameControllerButtonEvent* event=new QGameControllerButtonEvent(ID, i, true);
-               emit(JoystickButtonEvent((QGameControllerButtonEvent*)event));
+               emit(q->gameControllerButtonEvent((QGameControllerButtonEvent*)event));
            }
         }else
         {
@@ -583,7 +604,7 @@ void QGameControllerPrivate::readGameController()
                 ButtonValues.insert(i,false);
 //                qDebug("Button %i released.", i);
                 QGameControllerButtonEvent* event=new QGameControllerButtonEvent(ID, i, false);
-                emit(JoystickButtonEvent((QGameControllerButtonEvent*)event));
+                emit(q->gameControllerButtonEvent((QGameControllerButtonEvent*)event));
             }
         }
     }
@@ -707,3 +728,7 @@ void QGameControllerPrivate::process_event(js_event e)
 }
 #endif
 
+bool QGameControllerEvent::controllerId()
+{
+    return ControllerId;
+}

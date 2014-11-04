@@ -7,10 +7,10 @@
 QT_BEGIN_NAMESPACE
 class QGameControllerPrivate;
 
-class QGameControllerEvent
+class QGAMECONTROLLER_EXPORT QGameControllerEvent
 {
 public:
-    bool controllerId() {return ControllerId;}
+    bool controllerId();
 protected:
     uint ControllerId;
 };
@@ -19,8 +19,8 @@ class QGAMECONTROLLER_EXPORT QGameControllerButtonEvent : public QGameController
 {
 public:
     QGameControllerButtonEvent(uint controllerId, uint button, bool pressed);
-    uint button() {return Button;}
-    bool pressed() {return Pressed;}
+    uint button();
+    bool pressed();
 private:
     uint Button;
     bool Pressed;
@@ -30,8 +30,8 @@ class QGAMECONTROLLER_EXPORT QGameControllerAxisEvent : public QGameControllerEv
 {
 public:
     QGameControllerAxisEvent(uint controllerId, uint axis, float value);
-    uint axis() {return Axis;}
-    float value() {return Value;}
+    uint axis();
+    float value();
 private:
     uint Axis;
     float Value;
