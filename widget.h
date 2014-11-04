@@ -2,7 +2,7 @@
 #define WIDGET_H
 
 #include <QWidget>
-#include "qjoystick.h"
+#include "qgamecontroller.h"
 #include <QProgressBar>
 #include <QLabel>
 #include <QMap>
@@ -18,8 +18,8 @@ private:
     QMap<uint, QList<QProgressBar*> > barsMap;
     QMap<uint, QList<QLabel*> > buttonLabelsMap;
 private slots:
-    void handleQJoystickAxisEvent(QJoystickAxisEvent *event);
-    void handleQJoystickButtonEvent(QJoystickButtonEvent *event);
+    void handleQGameControllerAxisEvent(QGameControllerAxisEvent *event);
+    void handleQGameControllerButtonEvent(QGameControllerButtonEvent *event);
 };
 
 #endif // WIDGET_H

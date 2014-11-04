@@ -8,7 +8,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = QJoystick
+TARGET = QGameController
 TEMPLATE = app
 
 win32:LIBS      += -ldinput8 -ldxguid
@@ -18,10 +18,11 @@ mac:LIBS += -framework CoreFoundation
 
 SOURCES += main.cpp\
         widget.cpp \
-    qjoystick.cpp
+    qgamecontroller.cpp
 
 HEADERS  += widget.h \
-    qjoystick.h
+    qgamecontroller.h \
+    qgamecontroller_p.h
 
 FORMS    +=
 

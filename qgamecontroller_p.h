@@ -1,8 +1,9 @@
-#ifndef QJOYSTICK_H
-#define QJOYSTICK_H
+#ifndef QGAMECONTROLLER_P_H
+#define QGAMECONTROLLER_P_H
 
-#include <QObject>
 #include <QMap>
+
+#include "qgamecontroller.h"
 
 #ifdef Q_OS_LINUX
 #include <iostream>
@@ -35,63 +36,27 @@ CFMutableDictionaryRef hu_CreateDeviceMatchingDictionary(UInt32 inUsagePage, UIn
 QString CFStringRefToQString(CFStringRef str);
 #endif
 
-class QJoystickEvent
-{
-public:
-    bool joystickId() {return JoystickId;}
-protected:
-    uint JoystickId;
-};
+QT_BEGIN_NAMESPACE
 
-class QJoystickButtonEvent : public QJoystickEvent
+class QGameControllerPrivate
 {
+    Q_DECLARE_PUBLIC(QGameController)
 public:
-    QJoystickButtonEvent(uint joystickId, uint button, bool pressed);
-    uint button() {return Button;}
-    bool pressed() {return Pressed;}
-private:
-    uint Button;
-    bool Pressed;
-};
-
-class QJoystickAxisEvent : public QJoystickEvent
-{
-public:
-    QJoystickAxisEvent(uint joystickId, uint axis, float value);
-    uint axis() {return Axis;}
-    float value() {return Value;}
-private:
-    uint Axis;
-    float Value;
-};
-
-class QJoystick : public QObject
-{
-    Q_OBJECT
-public:
-    explicit QJoystick(uint id = 0, QObject *parent = 0);
-    uint axisCount() {return Axis;}
-    uint buttonCount() {return Buttons;}
-    float axisValue(uint axis) {return AxisValues.value(axis);}
-    bool buttonValue(uint button) {return ButtonValues.value(button);}
-    QString name() {return Name;}
-    uint id() {return ID;}
-    bool isValid() {return Valid;}
-signals:
-
-public slots:    
-    void readJoystick();
+    explicit QGameControllerPrivate(uint id, QGameController *q);
+    QGameController * const q_ptr;
 protected:
 #ifdef Q_OS_LINUX
     void process_event(js_event e);
 #endif
-private:
+public:
     int fd;
     QString Name;
     uint ID;
     bool Valid;
     QMap<uint, float> AxisValues;
     QMap<uint, bool> ButtonValues;
+
+    QGameControllerPrivate* d;
 #ifdef Q_OS_MAC
     IOHIDDeviceRef device;
     QList<IOHIDElementRef> axisElements;
@@ -99,8 +64,7 @@ private:
     QList<uint> axisMinVals;
     QList<IOHIDElementRef> buttonElements;
 #endif
-public:
-    //These should be private but EnumObjectsCallback needs access to them.
+
 #ifdef Q_OS_WIN
     LPDIRECTINPUTDEVICE8    g_pJoystick = nullptr;
     uint enumCounter;
@@ -108,10 +72,10 @@ public:
 #endif
     uint Axis;
     uint Buttons;
-signals:
-    void JoystickEvent(QJoystickEvent *event);
-    void JoystickButtonEvent(QJoystickButtonEvent *event);
-    void JoystickAxisEvent(QJoystickAxisEvent *event);
+
+    void readGameController();
 };
 
-#endif // QJOYSTICK_H
+QT_END_NAMESPACE
+
+#endif // QGAMECONTROLLER_P_H

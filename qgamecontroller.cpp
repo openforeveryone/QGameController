@@ -1,22 +1,92 @@
-#include "qjoystick.h"
+#include "qgamecontroller.h"
+#include "qgamecontroller_p.h"
+
 #include <QDebug>
 
 #ifdef Q_OS_WIN
-QJoystick *joysticktoenume; //TODO: Dispense with this global pointer.
+QGameController *joysticktoenume; //TODO: Dispense with this global pointer.
 LPDIRECTINPUT8          g_pDI = nullptr;
 #endif
 #ifdef Q_OS_MAC
 IOHIDManagerRef hidManager=NULL;
 #endif
 
-QJoystick::QJoystick(uint id, QObject *parent) :
-    QObject(parent)
+QGameController::QGameController(uint id, QObject *parent) :
+    QObject(parent), d_ptr(new QGameControllerPrivate(id, this))
+{
+
+}
+
+uint QGameController::axisCount()
+{
+    Q_D(QGameController);
+    return d->Axis;
+}
+
+uint QGameController::buttonCount()
+{
+    Q_D(QGameController);
+    return d->Buttons;
+}
+
+float QGameController::axisValue(uint axis)
+{
+    Q_D(QGameController);
+    return d->AxisValues.value(axis);
+}
+
+bool QGameController::buttonValue(uint button)
+{
+    Q_D(QGameController);
+    return d->ButtonValues.value(button);
+}
+
+QString QGameController::name()
+{
+    Q_D(QGameController);
+    return d->Name;
+}
+
+uint QGameController::id()
+{
+    Q_D(QGameController);
+    return d->ID;
+}
+
+bool QGameController::isValid()
+{
+    Q_D(QGameController);
+    return d->Valid;
+}
+
+void QGameController::readGameController()
+{
+    Q_D(QGameController);
+    d->readGameController();
+}
+
+QGameControllerButtonEvent::QGameControllerButtonEvent(uint controllerId, uint button, bool pressed)
+{
+    ControllerId=controllerId;
+    Button=button;
+    Pressed=pressed;
+}
+
+QGameControllerAxisEvent::QGameControllerAxisEvent(uint controllerId, uint axis, float value)
+{
+    ControllerId=controllerId;
+    Axis=axis;
+    Value=value;
+}
+
+QGameControllerPrivate::QGameControllerPrivate(uint id, QGameController *q) :
+    q_ptr(q)
 {
     ID=id;
     Valid=false;
     Axis=0;
     Buttons=0;
-//    qDebug("QJoystick::QJoystick(%i)", ID);
+//    qDebug("QGameController::QGameController(%i)", ID);
 #ifdef Q_OS_LINUX
     char number_of_axes=0;
     char number_of_buttons=0;
@@ -36,7 +106,7 @@ QJoystick::QJoystick(uint id, QObject *parent) :
     ioctl (fd, JSIOCGNAME(80), &name_of_stick);
     Name=name_of_stick;
     qDebug("Joystick: \"%s\" has %i axis and %i buttons", name_of_stick, number_of_axes, number_of_buttons);
-    readJoystick();
+    readGameController();
 #endif
 
 #ifdef Q_OS_WIN
@@ -206,6 +276,7 @@ QJoystick::QJoystick(uint id, QObject *parent) :
 #endif
 }
 
+
 #ifdef Q_OS_MAC
 QString CFStringRefToQString(CFStringRef str)
 {
@@ -276,7 +347,7 @@ BOOL CALLBACK EnumJoysticksCallback( const DIDEVICEINSTANCE* pdidInstance,
 //    if( pEnumContext->bPreferredJoyCfgValid &&
 //        !IsEqualGUID( pdidInstance->guidInstance, pEnumContext->pPreferredJoyCfg->guidInstance ) )
 //    {
-//            //Maybe we should mark this as prefered in QJoystick
+//            //Maybe we should mark this as prefered in QGameController
 //    }
 
     // Get an interface to this joystick.
@@ -380,8 +451,10 @@ BOOL CALLBACK EnumObjectsCallback( const DIDEVICEOBJECTINSTANCE* pdidoi,
 }
 #endif
 
-void QJoystick::readJoystick()
+
+void QGameControllerPrivate::readGameController()
 {
+
 #ifdef Q_OS_LINUX
     if (!Valid)
         return;
@@ -467,13 +540,13 @@ void QJoystick::readJoystick()
             if (valueX!=AxisValues.value(axisid))
             {
                 AxisValues.insert(axisid,valueX);
-                QJoystickAxisEvent *event=new QJoystickAxisEvent(ID, axisid, valueX);
+                QGameControllerAxisEvent *event=new QGameControllerAxisEvent(ID, axisid, valueX);
 //                qDebug("Axis %i moved to %f.", axisid, valueX);
                 emit(JoystickAxisEvent(event));
             }if (valueY!=AxisValues.value(axisid+1))
             {
                 AxisValues.insert(axisid+1,valueY);
-                QJoystickAxisEvent *event=new QJoystickAxisEvent(ID, axisid+1, valueY);
+                QGameControllerAxisEvent *event=new QGameControllerAxisEvent(ID, axisid+1, valueY);
                 qDebug("Axis %i moved to %f.", axisid+1, valueY);
                 emit(JoystickAxisEvent(event));
             }
@@ -485,7 +558,7 @@ void QJoystick::readJoystick()
             if (value!=AxisValues.value(axisid))
             {
                 AxisValues.insert(axisid,value);
-                QJoystickAxisEvent *event=new QJoystickAxisEvent(ID, axisid, value);
+                QGameControllerAxisEvent *event=new QGameControllerAxisEvent(ID, axisid, value);
                 //            qDebug("Axis %i moved to %f.", axisid, value);
                 emit(JoystickAxisEvent(event));
             }
@@ -500,8 +573,8 @@ void QJoystick::readJoystick()
            {
                ButtonValues.insert(i,true);
 //               qDebug("Button %i pressed.", i);
-               QJoystickButtonEvent* event=new QJoystickButtonEvent(ID, i, true);
-               emit(JoystickButtonEvent((QJoystickButtonEvent*)event));
+               QGameControllerButtonEvent* event=new QGameControllerButtonEvent(ID, i, true);
+               emit(JoystickButtonEvent((QGameControllerButtonEvent*)event));
            }
         }else
         {
@@ -509,8 +582,8 @@ void QJoystick::readJoystick()
             {
                 ButtonValues.insert(i,false);
 //                qDebug("Button %i released.", i);
-                QJoystickButtonEvent* event=new QJoystickButtonEvent(ID, i, false);
-                emit(JoystickButtonEvent((QJoystickButtonEvent*)event));
+                QGameControllerButtonEvent* event=new QGameControllerButtonEvent(ID, i, false);
+                emit(JoystickButtonEvent((QGameControllerButtonEvent*)event));
             }
         }
     }
@@ -538,8 +611,8 @@ void QJoystick::readJoystick()
                     AxisValues.insert(axidID,ivalue);
                     float value = ((float)(ivalue-min)/(float)(max-min) -.5 )*2.0;
 //                    qDebug() << ID << "Axis value" << axidID << "changed to " << ivalue << value;
-                    QJoystickAxisEvent* event=new QJoystickAxisEvent(ID, axidID, value);
-                    emit(JoystickAxisEvent((QJoystickAxisEvent*)event));
+                    QGameControllerAxisEvent* event=new QGameControllerAxisEvent(ID, axidID, value);
+                    emit(JoystickAxisEvent((QGameControllerAxisEvent*)event));
                 }
             }else{
                 //This is a POV hat.
@@ -562,13 +635,13 @@ void QJoystick::readJoystick()
                 if (valueX!=AxisValues.value(axidID))
                 {
                     AxisValues.insert(axidID,valueX);
-                    QJoystickAxisEvent *event=new QJoystickAxisEvent(ID, axidID, valueX);
+                    QGameControllerAxisEvent *event=new QGameControllerAxisEvent(ID, axidID, valueX);
 //                    qDebug("Axis %i moved to %f.", axidID, valueX);
                     emit(JoystickAxisEvent(event));
                 }if (valueY!=AxisValues.value(axidID+1))
                 {
                     AxisValues.insert(axidID+1,valueY);
-                    QJoystickAxisEvent *event=new QJoystickAxisEvent(ID, axidID+1, valueY);
+                    QGameControllerAxisEvent *event=new QGameControllerAxisEvent(ID, axidID+1, valueY);
 //                    qDebug("Axis %i moved to %f.", axidID+1, valueY);
                     emit(JoystickAxisEvent(event));
                 }
@@ -586,8 +659,8 @@ void QJoystick::readJoystick()
             {
 //                qDebug() << ID << "Button value" << i << "Changed to " << IOHIDValueGetIntegerValue(HIDValue);
                 ButtonValues.insert(i,pressed);
-                QJoystickButtonEvent* event=new QJoystickButtonEvent(ID, i, pressed);
-                emit(JoystickButtonEvent((QJoystickButtonEvent*)event));
+                QGameControllerButtonEvent* event=new QGameControllerButtonEvent(ID, i, pressed);
+                emit(JoystickButtonEvent((QGameControllerButtonEvent*)event));
             }
         }
     }
@@ -595,9 +668,10 @@ void QJoystick::readJoystick()
 }
 
 #ifdef Q_OS_LINUX
-void QJoystick::process_event(js_event e)
+void QGameControllerPrivate::process_event(js_event e)
 {
-    QJoystickEvent *event = NULL;
+    Q_Q(QGameController);
+    QGameControllerEvent *event = NULL;
     if (e.type & JS_EVENT_INIT)
     {
 //        qDebug() << "process_event" << "event was a JS_EVENT_INIT" << e.number << e.value << e.type;
@@ -614,9 +688,9 @@ void QJoystick::process_event(js_event e)
         {
 //            qDebug("Button %i released.", e.number);
         }
-        event=new QJoystickButtonEvent(ID, e.number, value);
+        event=new QGameControllerButtonEvent(ID, e.number, value);
         ButtonValues.insert(e.number, value);
-        emit(JoystickButtonEvent((QJoystickButtonEvent*)event));
+        emit(q->gameControllerButtonEvent((QGameControllerButtonEvent*)event));
     } else if (e.type & JS_EVENT_AXIS) {
         float Value;
         if (value<0)
@@ -624,25 +698,12 @@ void QJoystick::process_event(js_event e)
         else
             Value = (float)value/32767.0;
         AxisValues.insert(e.number, Value);
-        event=new QJoystickAxisEvent(ID, e.number, Value);
+        event=new QGameControllerAxisEvent(ID, e.number, Value);
 //        qDebug("Axis %i moved to %f.", e.number , Value);
-        emit(JoystickAxisEvent((QJoystickAxisEvent*)event));
+        emit(q->gameControllerAxisEvent((QGameControllerAxisEvent*)event));
     }
-    emit(JoystickEvent(event));
+    emit(q->gameControllerEvent(event));
     return;
 }
 #endif
 
-QJoystickButtonEvent::QJoystickButtonEvent(uint joystickId, uint button, bool pressed)
-{
-    JoystickId=joystickId;
-    Button=button;
-    Pressed=pressed;
-}
-
-QJoystickAxisEvent::QJoystickAxisEvent(uint joystickId, uint axis, float value)
-{
-    JoystickId=joystickId;
-    Axis=axis;
-    Value=value;
-}

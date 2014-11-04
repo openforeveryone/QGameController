@@ -6,23 +6,23 @@
 Widget::Widget(QWidget *parent) :
     QWidget(parent)
 {
-    this->setWindowTitle("QJoystick Test");
+    this->setWindowTitle("QGameController Test");
     QVBoxLayout *layout = new QVBoxLayout(this);
-    QJoystick *joystick;
+    QGameController *gameController;
     for (int i = 0; i < 10; i++)
     {
-        joystick = new QJoystick(i, this);
-        if (joystick->isValid())
+        gameController = new QGameController(i, this);
+        if (gameController->isValid())
         {
-            connect(joystick, SIGNAL(JoystickAxisEvent(QJoystickAxisEvent*)), this, SLOT(handleQJoystickAxisEvent(QJoystickAxisEvent*)));
-            connect(joystick, SIGNAL(JoystickButtonEvent(QJoystickButtonEvent*)), this, SLOT(handleQJoystickButtonEvent(QJoystickButtonEvent*)));
+            connect(gameController, SIGNAL(gameControllerAxisEvent(QGameControllerAxisEvent*)), this, SLOT(handleQGameControllerAxisEvent(QGameControllerAxisEvent*)));
+            connect(gameController, SIGNAL(gameControllerButtonEvent(QGameControllerButtonEvent*)), this, SLOT(handleQGameControllerButtonEvent(QGameControllerButtonEvent*)));
             QList<QProgressBar*> bars;
             QList<QLabel*> buttonLabels;
 
-            QLabel *label = new QLabel(joystick->name(), this);
+            QLabel *label = new QLabel(gameController->name(), this);
             layout->addWidget(label);
             QHBoxLayout *buttonLayout = new QHBoxLayout();
-            for (int i = 0; i < joystick->buttonCount(); i++)
+            for (int i = 0; i < gameController->buttonCount(); i++)
             {
                 QLabel *label = new QLabel(QString ("%1: <b><font color=grey>U</font></b>").arg(i), this);
                 label->setMargin(2);
@@ -30,7 +30,7 @@ Widget::Widget(QWidget *parent) :
                 buttonLayout->addWidget(label);
             }
             layout->addItem(buttonLayout);
-            for (int i = 0; i < joystick->axisCount(); i++)
+            for (int i = 0; i < gameController->axisCount(); i++)
             {
                 QLabel *label = new QLabel(QString ("Axis %1: ").arg(i), this);
                 QProgressBar *bar = new QProgressBar(this);
@@ -49,33 +49,33 @@ Widget::Widget(QWidget *parent) :
 
             QTimer *timer = new QTimer(this);
             timer->setInterval(15);
-            connect(timer, SIGNAL(timeout()), joystick, SLOT(readJoystick()));
+            connect(timer, SIGNAL(timeout()), gameController, SLOT(readGameController()));
             timer->start();
         }
         else
         {
-            delete joystick;
+            delete gameController;
             break;
         }
      }
 }
 
-void Widget::handleQJoystickAxisEvent(QJoystickAxisEvent* event)
+void Widget::handleQGameControllerAxisEvent(QGameControllerAxisEvent* event)
 {
-//    qDebug("handleQJoystickAxisEvent");
+//    qDebug("handleQGameControllerAxisEvent");
     uint axis = event->axis();
-    QList<QProgressBar*> bars = barsMap.value(event->joystickId());
+    QList<QProgressBar*> bars = barsMap.value(event->controllerId());
     Q_ASSERT(axis < bars.count());
     QProgressBar *bar = bars.at(axis);
     bar->setValue(event->value()*1000);
 }
 
 
-void Widget::handleQJoystickButtonEvent(QJoystickButtonEvent* event)
+void Widget::handleQGameControllerButtonEvent(QGameControllerButtonEvent* event)
 {
-//    qDebug("handleQJoystickButtonEvent");
+//    qDebug("handleQGameControllerButtonEvent");
     uint button = event->button();
-    QList<QLabel*> buttonLabels = buttonLabelsMap.value(event->joystickId());
+    QList<QLabel*> buttonLabels = buttonLabelsMap.value(event->controllerId());
     Q_ASSERT(button < buttonLabels.count());
     QLabel *label = buttonLabels.at(button);
     if (event->pressed())
