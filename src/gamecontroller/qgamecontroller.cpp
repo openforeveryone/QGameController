@@ -611,6 +611,7 @@ void QGameControllerPrivate::readGameController()
 #endif
 
 #ifdef Q_OS_MAC
+    Q_Q(QGameController);
     IOReturn result;
     IOHIDValueRef HIDValue;
     for (uint axidID = 0; axidID<Axis; axidID++)
@@ -633,7 +634,7 @@ void QGameControllerPrivate::readGameController()
                     float value = ((float)(ivalue-min)/(float)(max-min) -.5 )*2.0;
 //                    qDebug() << ID << "Axis value" << axidID << "changed to " << ivalue << value;
                     QGameControllerAxisEvent* event=new QGameControllerAxisEvent(ID, axidID, value);
-                    emit(JoystickAxisEvent((QGameControllerAxisEvent*)event));
+                    emit(q->gameControllerAxisEvent((QGameControllerAxisEvent*)event));
                 }
             }else{
                 //This is a POV hat.
@@ -658,13 +659,13 @@ void QGameControllerPrivate::readGameController()
                     AxisValues.insert(axidID,valueX);
                     QGameControllerAxisEvent *event=new QGameControllerAxisEvent(ID, axidID, valueX);
 //                    qDebug("Axis %i moved to %f.", axidID, valueX);
-                    emit(JoystickAxisEvent(event));
+                    emit(q->gameControllerAxisEvent(event));
                 }if (valueY!=AxisValues.value(axidID+1))
                 {
                     AxisValues.insert(axidID+1,valueY);
                     QGameControllerAxisEvent *event=new QGameControllerAxisEvent(ID, axidID+1, valueY);
 //                    qDebug("Axis %i moved to %f.", axidID+1, valueY);
-                    emit(JoystickAxisEvent(event));
+                    emit(q->gameControllerAxisEvent(event));
                 }
                 axidID++; //We have dealt with 2 axis in one go.
             }
@@ -681,7 +682,7 @@ void QGameControllerPrivate::readGameController()
 //                qDebug() << ID << "Button value" << i << "Changed to " << IOHIDValueGetIntegerValue(HIDValue);
                 ButtonValues.insert(i,pressed);
                 QGameControllerButtonEvent* event=new QGameControllerButtonEvent(ID, i, pressed);
-                emit(JoystickButtonEvent((QGameControllerButtonEvent*)event));
+                emit(q->gameControllerButtonEvent((QGameControllerButtonEvent*)event));
             }
         }
     }
