@@ -11,6 +11,65 @@ LPDIRECTINPUT8          g_pDI = nullptr;
 IOHIDManagerRef hidManager=NULL;
 #endif
 
+QGameControllerEvent::QGameControllerEvent(uint controllerId)
+    :d_ptr(new QGameControllerEventPrivate(this))
+{
+    Q_D(QGameControllerEvent);
+    d->ControllerId=controllerId;
+}
+
+QGameControllerEvent::QGameControllerEvent(uint controllerId, QGameControllerEventPrivate &d)
+    :d_ptr(&d)
+{
+    d.ControllerId=controllerId;
+}
+
+bool QGameControllerEvent::controllerId()
+{
+    Q_D(QGameControllerEvent);
+    return d->ControllerId;
+}
+
+QGameControllerButtonEvent::QGameControllerButtonEvent(uint controllerId, uint button, bool pressed)
+    : QGameControllerEvent(controllerId, *new QGameControllerEventPrivate(this))
+{
+    Q_D(QGameControllerButtonEvent);
+    d->Button=button;
+    d->Pressed=pressed;
+}
+
+uint QGameControllerButtonEvent::button()
+{
+    Q_D(QGameControllerButtonEvent);
+    return d->Button;
+}
+
+bool QGameControllerButtonEvent::pressed()
+{
+    Q_D(QGameControllerButtonEvent);
+    return d->Pressed;
+}
+
+QGameControllerAxisEvent::QGameControllerAxisEvent(uint controllerId, uint axis, float value)
+    : QGameControllerEvent(controllerId, *new QGameControllerEventPrivate(this))
+{
+    Q_D(QGameControllerAxisEvent);
+    d->Axis=axis;
+    d->Value=value;
+}
+
+uint QGameControllerAxisEvent::axis()
+{
+    Q_D(QGameControllerAxisEvent);
+    return d->Axis;
+}
+
+float QGameControllerAxisEvent::value()
+{
+    Q_D(QGameControllerAxisEvent);
+    return d->Value;
+}
+
 QGameController::QGameController(uint id, QObject *parent) :
     QObject(parent), d_ptr(new QGameControllerPrivate(id, this))
 {
@@ -65,39 +124,6 @@ void QGameController::readGameController()
     d->readGameController();
 }
 
-QGameControllerButtonEvent::QGameControllerButtonEvent(uint controllerId, uint button, bool pressed)
-{
-    ControllerId=controllerId;
-    Button=button;
-    Pressed=pressed;
-}
-
-uint QGameControllerButtonEvent::button()
-{
-    return Button;
-}
-
-bool QGameControllerButtonEvent::pressed()
-{
-    return Pressed;
-}
-
-QGameControllerAxisEvent::QGameControllerAxisEvent(uint controllerId, uint axis, float value)
-{
-    ControllerId=controllerId;
-    Axis=axis;
-    Value=value;
-}
-
-uint QGameControllerAxisEvent::axis()
-{
-    return Axis;
-}
-
-float QGameControllerAxisEvent::value()
-{
-    return Value;
-}
 
 QGameControllerPrivate::QGameControllerPrivate(uint id, QGameController *q) :
     q_ptr(q)
@@ -729,7 +755,3 @@ void QGameControllerPrivate::process_event(js_event e)
 }
 #endif
 
-bool QGameControllerEvent::controllerId()
-{
-    return ControllerId;
-}

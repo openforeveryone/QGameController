@@ -38,6 +38,29 @@ QString CFStringRefToQString(CFStringRef str);
 
 QT_BEGIN_NAMESPACE
 
+struct QGameControllerEventPrivate
+{
+    Q_DECLARE_PUBLIC(QGameControllerEvent)
+    QGameControllerEventPrivate(QGameControllerEvent *q) : q_ptr(q) { }
+    QGameControllerEvent * const q_ptr;
+    uint ControllerId;
+};
+
+
+struct QGameControllerButtonEventPrivate : public QGameControllerEventPrivate
+{
+    Q_DECLARE_PUBLIC(QGameControllerButtonEvent)
+    uint Button;
+    bool Pressed;
+};
+
+struct QGameControllerAxisEventPrivate : public QGameControllerEventPrivate
+{
+    Q_DECLARE_PUBLIC(QGameControllerAxisEvent)
+    uint Axis;
+    float Value;
+};
+
 class QGameControllerPrivate
 {
     Q_DECLARE_PUBLIC(QGameController)
@@ -55,8 +78,6 @@ public:
     bool Valid;
     QMap<uint, float> AxisValues;
     QMap<uint, bool> ButtonValues;
-
-    QGameControllerPrivate* d;
 #ifdef Q_OS_MAC
     IOHIDDeviceRef device;
     QList<IOHIDElementRef> axisElements;

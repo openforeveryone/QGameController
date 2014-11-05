@@ -6,35 +6,37 @@
 
 QT_BEGIN_NAMESPACE
 class QGameControllerPrivate;
+class QGameControllerEventPrivate;
+class QGameControllerAxisEventPrivate;
+class QGameControllerButtonEventPrivate;
 
 class QGAMECONTROLLER_EXPORT QGameControllerEvent
 {
+    Q_DECLARE_PRIVATE(QGameControllerEvent)
 public:
+    QGameControllerEvent(uint controllerId);
     bool controllerId();
 protected:
-    uint ControllerId;
+    QGameControllerEvent(uint controllerId, QGameControllerEventPrivate &d);
+    QGameControllerEventPrivate* const d_ptr;
 };
 
 class QGAMECONTROLLER_EXPORT QGameControllerButtonEvent : public QGameControllerEvent
 {
+    Q_DECLARE_PRIVATE(QGameControllerButtonEvent)
 public:
     QGameControllerButtonEvent(uint controllerId, uint button, bool pressed);
     uint button();
     bool pressed();
-private:
-    uint Button;
-    bool Pressed;
 };
 
 class QGAMECONTROLLER_EXPORT QGameControllerAxisEvent : public QGameControllerEvent
 {
+    Q_DECLARE_PRIVATE(QGameControllerAxisEvent)
 public:
     QGameControllerAxisEvent(uint controllerId, uint axis, float value);
     uint axis();
     float value();
-private:
-    uint Axis;
-    float Value;
 };
 
 class QGAMECONTROLLER_EXPORT QGameController : public QObject
