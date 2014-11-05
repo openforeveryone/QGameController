@@ -16,6 +16,7 @@ class QGAMECONTROLLER_EXPORT QGameControllerEvent
 public:
     QGameControllerEvent(uint controllerId);
     bool controllerId();
+    ~QGameControllerEvent();
 protected:
     QGameControllerEvent(uint controllerId, QGameControllerEventPrivate &d);
     QGameControllerEventPrivate* const d_ptr;

@@ -39,7 +39,7 @@ QString CFStringRefToQString(CFStringRef str);
 QT_BEGIN_NAMESPACE
 
 struct QGameControllerEventPrivate
-{
+{    
     Q_DECLARE_PUBLIC(QGameControllerEvent)
     QGameControllerEventPrivate(QGameControllerEvent *q) : q_ptr(q) { }
     QGameControllerEvent * const q_ptr;
@@ -50,6 +50,7 @@ struct QGameControllerEventPrivate
 struct QGameControllerButtonEventPrivate : public QGameControllerEventPrivate
 {
     Q_DECLARE_PUBLIC(QGameControllerButtonEvent)
+    QGameControllerButtonEventPrivate(QGameControllerEvent *q) : QGameControllerEventPrivate(q) { }
     uint Button;
     bool Pressed;
 };
@@ -57,6 +58,7 @@ struct QGameControllerButtonEventPrivate : public QGameControllerEventPrivate
 struct QGameControllerAxisEventPrivate : public QGameControllerEventPrivate
 {
     Q_DECLARE_PUBLIC(QGameControllerAxisEvent)
+    QGameControllerAxisEventPrivate(QGameControllerEvent *q) : QGameControllerEventPrivate(q) { }
     uint Axis;
     float Value;
 };

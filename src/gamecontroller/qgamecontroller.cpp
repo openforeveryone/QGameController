@@ -30,8 +30,13 @@ bool QGameControllerEvent::controllerId()
     return d->ControllerId;
 }
 
+QGameControllerEvent::~QGameControllerEvent()
+{
+    delete d_ptr;
+}
+
 QGameControllerButtonEvent::QGameControllerButtonEvent(uint controllerId, uint button, bool pressed)
-    : QGameControllerEvent(controllerId, *new QGameControllerEventPrivate(this))
+    : QGameControllerEvent(controllerId, *new QGameControllerButtonEventPrivate(this))
 {
     Q_D(QGameControllerButtonEvent);
     d->Button=button;
@@ -51,7 +56,7 @@ bool QGameControllerButtonEvent::pressed()
 }
 
 QGameControllerAxisEvent::QGameControllerAxisEvent(uint controllerId, uint axis, float value)
-    : QGameControllerEvent(controllerId, *new QGameControllerEventPrivate(this))
+    : QGameControllerEvent(controllerId, *new QGameControllerAxisEventPrivate(this))
 {
     Q_D(QGameControllerAxisEvent);
     d->Axis=axis;
@@ -594,7 +599,7 @@ void QGameControllerPrivate::readGameController()
             {
                 AxisValues.insert(axisid+1,valueY);
                 QGameControllerAxisEvent *event=new QGameControllerAxisEvent(ID, axisid+1, valueY);
-                qDebug("Axis %i moved to %f.", axisid+1, valueY);
+//                qDebug("Axis %i moved to %f.", axisid+1, valueY);
                 emit(q->gameControllerAxisEvent(event));
             }
             axisid++; //We have dealt with 2 axis in one go.
