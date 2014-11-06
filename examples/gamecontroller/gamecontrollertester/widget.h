@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <QtGameController/QGameController>
-#include <QProgressBar>
+#include <QSlider>
 #include <QLabel>
 #include <QMap>
 
@@ -15,7 +15,7 @@ public:
     explicit Widget(QWidget *parent = 0);
     ~Widget();
 private:
-    QMap<uint, QList<QProgressBar*> > barsMap;
+    QMap<uint, QList<QSlider*> > slidersMap;
     QMap<uint, QList<QLabel*> > buttonLabelsMap;
 private slots:
     void handleQGameControllerAxisEvent(QGameControllerAxisEvent *event);

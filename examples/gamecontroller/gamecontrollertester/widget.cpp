@@ -6,7 +6,7 @@
 Widget::Widget(QWidget *parent) :
     QWidget(parent)
 {
-    this->setWindowTitle("QGameController Test");
+    this->setWindowTitle("Game Controller Tester");
     QVBoxLayout *layout = new QVBoxLayout(this);
     QGameController *gameController;
     for (int i = 0; i < 10; i++)
@@ -16,7 +16,7 @@ Widget::Widget(QWidget *parent) :
         {
             connect(gameController, SIGNAL(gameControllerAxisEvent(QGameControllerAxisEvent*)), this, SLOT(handleQGameControllerAxisEvent(QGameControllerAxisEvent*)));
             connect(gameController, SIGNAL(gameControllerButtonEvent(QGameControllerButtonEvent*)), this, SLOT(handleQGameControllerButtonEvent(QGameControllerButtonEvent*)));
-            QList<QProgressBar*> bars;
+            QList<QSlider*> sliders;
             QList<QLabel*> buttonLabels;
 
             QLabel *label = new QLabel(gameController->name(), this);
@@ -33,19 +33,22 @@ Widget::Widget(QWidget *parent) :
             for (int i = 0; i < gameController->axisCount(); i++)
             {
                 QLabel *label = new QLabel(QString ("Axis %1: ").arg(i), this);
-                QProgressBar *bar = new QProgressBar(this);
-                bar->setMinimum(-1000);
-                bar->setMaximum(1000);
-                bar->setValue(0);
-                bars.append(bar);
+                QSlider *slider = new QSlider(Qt::Horizontal, this);
+                slider->setEnabled(false);
+                slider->setTickPosition(QSlider::TicksBothSides);
+                slider->setTickInterval(1000/4);
+                slider->setMinimum(-1000);
+                slider->setMaximum(1000);
+                slider->setValue(0);
+                sliders.append(slider);
                 QHBoxLayout *hlayout = new QHBoxLayout();
                 hlayout->addWidget(label);
-                hlayout->addWidget(bar);
+                hlayout->addWidget(slider);
                 layout->addItem(hlayout);
             }
 
             buttonLabelsMap.insert(i, buttonLabels);
-            barsMap.insert(i, bars);
+            slidersMap.insert(i, sliders);
 
             QTimer *timer = new QTimer(this);
             timer->setInterval(15);
@@ -64,9 +67,9 @@ void Widget::handleQGameControllerAxisEvent(QGameControllerAxisEvent* event)
 {
 //    qDebug("handleQGameControllerAxisEvent");
     uint axis = event->axis();
-    QList<QProgressBar*> bars = barsMap.value(event->controllerId());
-    Q_ASSERT(axis < bars.count());
-    QProgressBar *bar = bars.at(axis);
+    QList<QSlider*> sliders = slidersMap.value(event->controllerId());
+    Q_ASSERT(axis < sliders.count());
+    QSlider *bar = sliders.at(axis);
     bar->setValue(event->value()*1000);
 }
 
