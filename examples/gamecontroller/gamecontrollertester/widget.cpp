@@ -71,6 +71,7 @@ void Widget::handleQGameControllerAxisEvent(QGameControllerAxisEvent* event)
     Q_ASSERT(axis < sliders.count());
     QSlider *bar = sliders.at(axis);
     bar->setValue(event->value()*1000);
+    delete event;   //QGameControllerEvents unlike QEvents are not deleted automatically.
 }
 
 
@@ -85,6 +86,7 @@ void Widget::handleQGameControllerButtonEvent(QGameControllerButtonEvent* event)
         label->setText(QString ("%1: <b><font color=green>D</font></b>").arg(button));
     else
         label->setText(QString ("%1: <b><font color=grey>U</font></b>").arg(button));
+    delete event;   //QGameControllerEvents unlike QEvents are not deleted automatically.
 }
 
 
