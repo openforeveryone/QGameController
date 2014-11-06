@@ -162,6 +162,7 @@ QGameControllerPrivate::QGameControllerPrivate(uint id, QGameController *q) :
 
 #ifdef Q_OS_WIN
     HRESULT hr;
+    g_pJoystick = nullptr;
 
     // Register with DirectInput to get a pointer to an IDirectInput
     if (g_pDI==nullptr)

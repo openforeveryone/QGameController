@@ -89,7 +89,7 @@ public:
 #endif
 
 #ifdef Q_OS_WIN
-    LPDIRECTINPUTDEVICE8    g_pJoystick = nullptr;
+    LPDIRECTINPUTDEVICE8    g_pJoystick;
     uint enumCounter;
     QList<GUID> DIaxisGIIDs;
 #endif

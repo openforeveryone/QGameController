@@ -2,7 +2,7 @@
 #define WIDGET_H
 
 #include <QWidget>
-#include <QGameController>
+#include <QtGameController/QGameController>
 #include <QProgressBar>
 #include <QLabel>
 #include <QMap>

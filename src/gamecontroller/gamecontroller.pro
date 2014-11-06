@@ -9,7 +9,8 @@ DEFINES += QGAMECONTROLLER_LIBRARY
 
 #QMAKE_DOCS = $$PWD/doc/qtserialport.qdocconf
 
-win32:LIBS += -ldinput8 -ldxguid
+win32-g++:LIBS += -ldinput8 -ldxguid
+
 win32:CONFIG += c++11
 
 mac:LIBS += -framework IOKit
