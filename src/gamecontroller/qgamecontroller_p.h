@@ -75,7 +75,7 @@ protected:
 #endif
 public:
     int fd;
-    QString Name;
+    QString Description;
     uint ID;
     bool Valid;
     QMap<uint, float> AxisValues;

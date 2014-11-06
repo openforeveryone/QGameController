@@ -19,7 +19,7 @@ Widget::Widget(QWidget *parent) :
             QList<QSlider*> sliders;
             QList<QLabel*> buttonLabels;
 
-            QLabel *label = new QLabel(gameController->name(), this);
+            QLabel *label = new QLabel(gameController->description(), this);
             layout->addWidget(label);
             QHBoxLayout *buttonLayout = new QHBoxLayout();
             for (int i = 0; i < gameController->buttonCount(); i++)

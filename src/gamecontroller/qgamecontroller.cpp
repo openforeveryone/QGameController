@@ -105,10 +105,10 @@ bool QGameController::buttonValue(uint button)
     return d->ButtonValues.value(button);
 }
 
-QString QGameController::name()
+QString QGameController::description()
 {
     Q_D(QGameController);
-    return d->Name;
+    return d->Description;
 }
 
 uint QGameController::id()
@@ -155,7 +155,7 @@ QGameControllerPrivate::QGameControllerPrivate(uint id, QGameController *q) :
     Buttons=number_of_buttons;
     char name_of_stick[80];
     ioctl (fd, JSIOCGNAME(80), &name_of_stick);
-    Name=name_of_stick;
+    Description=name_of_stick;
     qDebug("Joystick: \"%s\" has %i axis and %i buttons", name_of_stick, number_of_axes, number_of_buttons);
     readGameController();
 #endif
@@ -221,8 +221,8 @@ QGameControllerPrivate::QGameControllerPrivate(uint id, QGameController *q) :
     if (hr==DIERR_INVALIDPARAM)
         qDebug() << "DIERR_INVALIDPARAM";
 
-    Name = QString::fromUtf16((ushort*)&(joystickinfo.tszProductName));
-//    qDebug() << name() << QString::fromUtf16((ushort*)&(joystickinfo.tszInstaxnceName));
+    Description = QString::fromUtf16((ushort*)&(joystickinfo.tszProductName));
+//    qDebug() << description() << QString::fromUtf16((ushort*)&(joystickinfo.tszInstaxnceName));
     Valid=true;
 
 #endif
@@ -271,14 +271,14 @@ QGameControllerPrivate::QGameControllerPrivate(uint id, QGameController *q) :
         {
             QString Property=CFStringRefToQString((CFStringRef)tCFTypeRef);
 //            qDebug() <<"Manufacturer" << Property;
-            Name.append(Property).append(" ");
+            Description.append(Property).append(" ");
         }
         CFTypeRef tCFTypeRef1 = IOHIDDeviceGetProperty(device, CFSTR(kIOHIDProductKey));
         if (tCFTypeRef1 && CFStringGetTypeID() == CFGetTypeID(tCFTypeRef1))
         {
             QString Property=CFStringRefToQString((CFStringRef)tCFTypeRef1);
 //            qDebug() <<"Product" << Property;
-            Name.append(Property);
+            Description.append(Property);
         }
     }else return;
     CFArrayRef elementCFArrayRef = IOHIDDeviceCopyMatchingElements(device, NULL, kIOHIDOptionsTypeNone);

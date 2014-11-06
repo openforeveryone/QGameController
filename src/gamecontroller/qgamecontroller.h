@@ -50,7 +50,7 @@ public:
     uint buttonCount();
     float axisValue(uint axis);
     bool buttonValue(uint button);
-    QString name();
+    QString description();
     uint id();
     bool isValid();
 signals:
