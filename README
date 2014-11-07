@@ -6,7 +6,7 @@ Game controller and joystick support for Qt.
 This project provides game controller (joystick) support for Qt5 in the form of a QtModule. 
 
 Platform Support:
-Supports Linux, Mac OS X and Windows (both Mingw and MSVC).
+Supports Linux, Mac OS X and Windows (both MinGW and MSVC).
 
 Device Support
 Linux: Should support any game controller that can be read from /dev/input/js*
@@ -16,7 +16,7 @@ Installing:
 
 If you are running Windows you will need a standard install of Qt5 and ActivePerl http://www.activestate.com/activeperl/downloads.
 If you are using MSVC you will also require the DirectX SDK (to link against dxguid.lib and dinput8.lib).
-If you are using Mingw you will need dinput.h in your include path.
+If you are using MinGW you will need dinputd.h in your include path.
 
 cd to the root directory of this project and run:
 qmake
