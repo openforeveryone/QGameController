@@ -17,40 +17,44 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef QGAMECONTROLLER_P_H
-#define QGAMECONTROLLER_P_H
+#ifndef QGAMECONTROLLER_LINUX_P_H
+#define QGAMECONTROLLER_LINUX_P_H
 
 #include <QMap>
 
 #include "qgamecontroller.h"
+#include "qgamecontroller_p.h"
+
+#include <iostream>
+#include <unistd.h>
+#include <fcntl.h>
+//#include <sstream>
+#include <errno.h>
+#include <linux/joystick.h>
 
 QT_BEGIN_NAMESPACE
 
-struct QGameControllerEventPrivate
-{    
-    Q_DECLARE_PUBLIC(QGameControllerEvent)
-    QGameControllerEventPrivate(QGameControllerEvent *q) : q_ptr(q) { }
-    QGameControllerEvent * const q_ptr;
-    uint ControllerId;
-};
-
-
-struct QGameControllerButtonEventPrivate : public QGameControllerEventPrivate
+class QGameControllerPrivate
 {
-    Q_DECLARE_PUBLIC(QGameControllerButtonEvent)
-    QGameControllerButtonEventPrivate(QGameControllerEvent *q) : QGameControllerEventPrivate(q) { }
-    uint Button;
-    bool Pressed;
-};
-
-struct QGameControllerAxisEventPrivate : public QGameControllerEventPrivate
-{
-    Q_DECLARE_PUBLIC(QGameControllerAxisEvent)
-    QGameControllerAxisEventPrivate(QGameControllerEvent *q) : QGameControllerEventPrivate(q) { }
+    Q_DECLARE_PUBLIC(QGameController)
+public:
+    explicit QGameControllerPrivate(uint id, QGameController *q);
+    QGameController * const q_ptr;
+protected:
+    void process_event(js_event e);
+public:
+    int fd;
+    QString Description;
+    uint ID;
+    bool Valid;
+    QMap<uint, float> AxisValues;
+    QMap<uint, bool> ButtonValues;
     uint Axis;
-    float Value;
+    uint Buttons;
+
+    void readGameController();
 };
 
 QT_END_NAMESPACE
 
-#endif // QGAMECONTROLLER_P_H
+#endif // QGAMECONTROLLER_LINUX_P_H

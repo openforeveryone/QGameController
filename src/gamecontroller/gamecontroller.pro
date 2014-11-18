@@ -17,6 +17,9 @@ mac:LIBS += -framework IOKit
 mac:LIBS += -framework CoreFoundation
 
 SOURCES +=  qgamecontroller.cpp
+linux:SOURCES +=  qgamecontroller_linux.cpp
+mac:SOURCES +=  qgamecontroller_mac.cpp
+win32:SOURCES +=  qgamecontroller_win.cpp
 
 PUBLIC_HEADERS += qgamecontroller.h
 PRIVATE_HEADERS +=  qgamecontroller_p.h
