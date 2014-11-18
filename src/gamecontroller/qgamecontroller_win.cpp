@@ -18,7 +18,7 @@
  ***************************************************************************/
 
 #include "qgamecontroller.h"
-#include "qgamecontroller_p.h"
+#include "qgamecontroller_win_p.h"
 
 #include <QDebug>
 
