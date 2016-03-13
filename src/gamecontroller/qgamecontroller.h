@@ -34,7 +34,7 @@ class QGAMECONTROLLER_EXPORT QGameControllerEvent
     Q_DECLARE_PRIVATE(QGameControllerEvent)
 public:
     QGameControllerEvent(uint controllerId);
-    bool controllerId();
+    uint controllerId();
     ~QGameControllerEvent();
 protected:
     QGameControllerEvent(uint controllerId, QGameControllerEventPrivate &d);
