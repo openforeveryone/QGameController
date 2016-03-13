@@ -45,7 +45,7 @@ QGameControllerEvent::QGameControllerEvent(uint controllerId, QGameControllerEve
     d.ControllerId=controllerId;
 }
 
-bool QGameControllerEvent::controllerId()
+uint QGameControllerEvent::controllerId()
 {
     Q_D(QGameControllerEvent);
     return d->ControllerId;
